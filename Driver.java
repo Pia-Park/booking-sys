@@ -170,6 +170,41 @@ public class Driver {
 		}
 						
 	}
+	
+	public static void printStudentReservation(Connection conn) throws SQLException {
+		Scanner input = new Scanner(System.in);
+		PreparedStatement prestmt = null;
+		prestmt = conn.prepareStatement(ALL_R_QUERY);
+		
+		System.out.println("Enter the Student ID: ");
+		int sID = input.nextInt();
+		
+		ResultSet rs = prestmt.executeQuery(JOIN_R_QUERY);
+				
+		while(rs.next()) {
+			if(sID == rs.getInt("student_id")) {
+				System.out.println("Reservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
+						"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname"));
+			}
+		}
+		
+	}
+	
+	public static String answer() {
+		Scanner input = new Scanner(System.in);
+		System.out.println("=========================================");
+		System.out.println("        Welcome to Cornerstone!");
+		System.out.println("=========================================");
+
+		System.out.println("If you are a teacher press 't', \nif you are a student press 's': ");
+		String answer = input.nextLine();
+		
+		while(!answer.equalsIgnoreCase("t") && !answer.equalsIgnoreCase("s")) {
+			System.err.println("Wrong Information. Please try again.");
+			System.out.println("Enter the 't' or 's'");
+			answer = input.nextLine();
+		} return answer;
+	}
 
 	public static void main(String[] args) throws SQLException {
 		
@@ -181,40 +216,53 @@ public class Driver {
 		try {
 			conn = getConnection();
 			
-//			addStudent(conn);
-//			addTeacher(conn);
-//			addCourse(conn);
-//			makeReservation(conn);
-			printCourseReservation(conn);
 			
-//			System.out.println("List of 0000");
-//			ResultSet rs = getDB(conn, ALL_C_QUERY);
-//			while(rs.next()) {
-//				System.out.println("Course name: " + rs.getString("course_name") + "\nteacher ID: " + rs.getString("teacher_id"));
-//			}
+				String answer = answer();
+				if(answer.equalsIgnoreCase("t")) {
+					System.out.println("================= MENU ==================");
+					System.out.println("1. Check the Reservation\n2. Add a Student\n3. Add a Teacher\n4. Add a Course\n5. Quit");
+					System.out.println("=========================================");
+					int numA = input.nextInt();
+					switch (numA) {
+					case 1:
+						printCourseReservation(conn);
+						break;
+					case 2:
+						addStudent(conn);
+						break;
+					case 3:
+						addTeacher(conn);
+						break;
+					case 4:
+						addCourse(conn);
+						break;
+					default:
+						System.out.println("Good bye!! Have a nice day!!");
+						break;
+					}
+				} else if(answer.equalsIgnoreCase("s")){
+					System.out.println("================= MENU ==================");
+					System.out.println("1. Make a Reservation\n2. Check the reservation\n3. Quit");
+					System.out.println("=========================================");
+					int numB = input.nextInt();
+					switch (numB) {
+					case 1:
+						makeReservation(conn);
+						break;
+					case 2:	
+						printStudentReservation(conn);
+						break;
+					default:
+						System.out.println("Good bye!!! Have a nice day!!");
+						break;
+					}
+					
+				} else {
+					System.err.println("Wrong Information!");
+				}
+				
+
 			
-//			System.out.println("--------------------------------");
-//			System.out.println("1.Reservation\n2.add a student\n3.add a teacher\n4.add a course\n5.quit");
-//			System.out.println("--------------------------------");
-//			int answer = input.nextInt();
-//			
-//			while(true) {
-//				
-//				switch (answer) {
-//				case 1:
-//					makeReservation(conn);
-//					ResultSet rs = getDB(conn, ALL_R_QUERY);
-//					System.out.println("Reservation date: " + rs.getString("r_date") + "\nCourse ID: " + rs.getString("course_id"));
-//					break;
-//				case 2:
-//					addStudent(conn);
-//					break;
-//
-//				default:
-//					break;
-//				}
-//				
-//			}
 
 		} catch (Exception e) {
 			System.out.println(e);
