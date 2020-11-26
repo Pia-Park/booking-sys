@@ -22,10 +22,10 @@ public class Driver {
 	private static final String ADD_S_QUERY = "INSERT INTO STUDENT(student_fname, student_lname, student_pnum, student_email) VALUES (?,?,?,?)";
 	private static final String ADD_T_QUERY = "INSERT INTO TEACHER(teacher_fname, teacher_lname, teacher_pnum, teacher_email) VALUES (?,?,?,?)";
 	private static final String ADD_C_QUERY = "INSERT INTO COURSE(course_name, teacher_id) VALUES (?,?)";
-//	private static final String DELETE_R_QUERY = "DELETE FROM RESERVATION WHERE student_id = ?";
+	private static final String DELETE_R_QUERY = "DELETE FROM RESERVATION WHERE r_id = ?";
 	private static final String UPDATE_R_QUERY = 
 			"UPDATE RESERVATION SET r_date = ? WHERE course_id = ?";
-	private static final String JOIN_R_QUERY = "SELECT s.student_fname, s.student_lname, c.course_name, s.student_id, r.course_id, r.r_date\n"
+	private static final String JOIN_R_QUERY = "SELECT s.student_fname, s.student_lname, c.course_name, s.student_id, r.course_id, r.r_date, r.r_id\n"
 			+ "FROM STUDENT s \n"
 			+ "INNER JOIN RESERVATION r\n"
 			+ "ON r.student_id = s.student_id\n"
@@ -66,7 +66,10 @@ public class Driver {
 		prestmt.setString(4, email);
 		
 		prestmt.executeUpdate();
-		System.out.println(fname + " " + lname + "has been added as a student.");
+		System.out.println("*｡ ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ ˖° ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ *｡");
+		System.out.println(fname + " " + lname + " has been added as a student.");
+		System.out.println("*｡ ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ ˖° ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ *｡");
+
 	}
 	
 	
@@ -92,7 +95,9 @@ public class Driver {
 		prestmt.setString(4, email);
 		
 		prestmt.executeUpdate();
+		System.out.println("*｡ ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ ˖° ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ *｡");
 		System.out.println(fname + " " + lname + " has been added as a teacher.");
+		System.out.println("*｡ ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ ˖° ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ *｡");
 
 	}
 	
@@ -110,140 +115,176 @@ public class Driver {
 		prestmt.setInt(2, tID);
 			
 		prestmt.executeUpdate();
+		System.out.println("*｡ ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ ˖° ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ *｡");
 		System.out.println(cName + " has been added as a course.");
+		System.out.println("*｡ ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ ˖° ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ *｡");
 
 	}
 	
 	
 	public static void makeReservation(Connection conn) throws SQLException {
 		Scanner input = new Scanner(System.in);
-		PreparedStatement prestmt = null;
-		prestmt = conn.prepareStatement(ADD_R_QUERY);
-		
-		System.out.println("Enter the date you want to reservation: ");
-		String date = input.nextLine();
-		prestmt.setDate(1, Date.valueOf(date));
-		
-		System.out.println("Enter the ID of course: ");
-		int cID = input.nextInt();
-		prestmt.setInt(2, cID);
-		
-		System.out.println("Enter the ID of student: ");
-		int sID = input.nextInt();
-		prestmt.setInt(3, sID);
-		
-		prestmt.executeUpdate();
-		
-		ResultSet rs = getDB(conn, ALL_ST_QUERY);
-		
-		while(rs.next()) {
-			if(sID == rs.getInt("student_id")) {
-				System.out.println("Reservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname"));
-				
-			}
+		try {
+			PreparedStatement prestmt = null;
+			prestmt = conn.prepareStatement(ADD_R_QUERY);
+			
+			System.out.println("Enter the date you want to reservation: ");
+			String date = input.nextLine();
+			prestmt.setDate(1, Date.valueOf(date));
+			
+			System.out.println("Enter the ID of course: ");
+			int cID = input.nextInt();
+			prestmt.setInt(2, cID);
+			
+			System.out.println("Enter the ID of student: ");
+			int sID = input.nextInt();
+			prestmt.setInt(3, sID);
+			
+			prestmt.executeUpdate();
+			
+			ResultSet rs = getDB(conn, JOIN_R_QUERY);
+			System.out.println("-------** Reservation Successful**-------");
+			System.out.println("----------** Resevation List**-----------");
+			while(rs.next()) {
+				if(sID == rs.getInt("student_id")) {
+					System.out.println("=========================================\nReservation Number: " + rs.getInt("r_id") + "\nReservation course name: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
+							"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname")+"\n=========================================");				
+				}
+			}		
+			
+		} catch (Exception e) {
+			System.out.println(e);
 		}
-		
-		ResultSet rs1 = getDB(conn, ALL_C_QUERY);
-		
-		while(rs1.next()) {
-			if(cID == rs1.getInt("course_id")) {
-				System.out.println("Reservation course Name: " + rs1.getString("course_name"));
-			}
-		}		
 
 	}
 	
 	public static void printCourseReservation(Connection conn) throws SQLException {
 		
 		Scanner input = new Scanner(System.in);
-		PreparedStatement prestmt = null;
-		prestmt = conn.prepareStatement(ALL_R_QUERY);
-		
-		System.out.println("Enter the course ID that you want to see: ");
-		int cID = input.nextInt();
-		
-		ResultSet rs = prestmt.executeQuery(JOIN_R_QUERY);
-				
-		while(rs.next()) {
-			if(cID == rs.getInt("course_id")) {
-				System.out.println("=========================================\nReservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
-						"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname") + "\n=========================================");
+		try {
+			PreparedStatement prestmt = null;
+			prestmt = conn.prepareStatement(ALL_R_QUERY);
+			
+			System.out.println("Enter the course ID that you want to see: ");
+			int cID = input.nextInt();
+			
+			ResultSet rs = prestmt.executeQuery(JOIN_R_QUERY);
+			Boolean nothing = false;
+			while(rs.next()) {
+				if(cID == rs.getInt("course_id")) {
+					System.out.println("=========================================\nReservation Number: " + rs.getInt("r_id") + "\nReservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
+							"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname") + "\n=========================================");
+					nothing = true;
+				}
+			}	
+			if(nothing == false) {
+				System.out.println("** This course doesn't have any reservation. **");
+				teacherMenu(conn);
 			}
-		} System.out.println("**** This course doesn't have any reservation. *****");
-						
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
-	
-	
+		
 	public static void printStudentReservation(Connection conn) throws SQLException {
 		Scanner input = new Scanner(System.in);
-		PreparedStatement prestmt = null;
-		prestmt = conn.prepareStatement(ALL_R_QUERY);
-		
-		System.out.println("Enter the Student ID: ");
-		int sID = input.nextInt();
-		
-		ResultSet rs = prestmt.executeQuery(JOIN_R_QUERY);
-				
-		while(rs.next()) {
-			if(sID == rs.getInt("student_id")) {
-				System.out.println("=========================================\nReservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
-						"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname")+"\n=========================================");
+		try {
+			PreparedStatement prestmt = null;
+			prestmt = conn.prepareStatement(ALL_R_QUERY);
+			
+			System.out.println("Enter the Student ID: ");
+			int sID = input.nextInt();
+			
+			ResultSet rs = prestmt.executeQuery(JOIN_R_QUERY);
+			Boolean nothing = false;
+			while(rs.next()) {
+				if(sID == rs.getInt("student_id")) {
+					System.out.println("=========================================\nReservation Number: " +rs.getInt("r_id")+ "\nReservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
+							"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname")+"\n=========================================");
+					nothing = true;
+				} 
+			} 
+			if(nothing == false) {
+				System.out.println("**** You don't have any reservation ****");
 			}
-		} System.out.println("*** You don't have any reservation. ***");
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
 		
 	}
 	
-//	public static void cancelReservation(Connection conn) throws SQLException {
-//		Scanner input = new Scanner(System.in);
-//		PreparedStatement prestmt = null;
-//		System.out.println("Enter the course ID that you want to cancel: ");
-//		int cId = input.nextInt();
-//		prestmt = conn.prepareStatement("DELETE FROM RESERVATION Where course_id = '"+ cId +"'");				
-//		prestmt.executeUpdate();
-//		
-//		System.out.println("Resevation is canceled.");
-//		
-//	}
-	
-	
+	public static void cancelReservation(Connection conn) throws SQLException {
+		Scanner input = new Scanner(System.in);
+		try {
+			printStudentReservation(conn);
+			System.out.println("Enter the Reservation Number that you want to cancel: ");
+			int rId = input.nextInt();
+			PreparedStatement prestmt = null;
+			prestmt = conn.prepareStatement(DELETE_R_QUERY);	
+			prestmt.setInt(1, rId);
+			prestmt.executeUpdate();
+			
+			ResultSet rs = prestmt.executeQuery(JOIN_R_QUERY);
+			System.out.println("----------** Cancel Successful**---------");
+			System.out.println("----------** Resevation List**-----------");
+			printStudentReservation(conn);
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+	}
+		
 	public static void findTeacher(Connection conn) throws SQLException{
 		Scanner input = new Scanner(System.in);
-		PreparedStatement prestmt = null;
-		prestmt = conn.prepareStatement(ALL_T_QUERY);
-				
-		ResultSet rs = prestmt.executeQuery(ALL_T_QUERY);
 					
 		try {
+			PreparedStatement prestmt = null;
+			prestmt = conn.prepareStatement(ALL_T_QUERY);			
+			ResultSet rs = prestmt.executeQuery(ALL_T_QUERY);
 			System.out.println("Enter the Teacher ID: ");
 			int tID = input.nextInt();
+			Boolean nothing = false;
 			while(rs.next()) {
 				if(tID == rs.getInt("teacher_id")) {
-					System.out.println("ʕ•ᴥ•ʔ нёllo, " + rs.getString("teacher_fname") + " " + rs.getString("teacher_lname") + " teacher ♡");			
+					System.out.println("ʕ•ᴥ•ʔ нёllo, " + rs.getString("teacher_fname") + " " + rs.getString("teacher_lname") + " teacher ♡");
+					nothing = true;
 				} 
-			}  
+			} 
+			if(nothing == false) {
+				System.out.println("Wrong Information. Please try again.");
+				findTeacher(conn);	
+			}
 			
 		} catch (Exception e) {
 			System.out.println(e);
 		}			
 	}
-	
-	
-	
+			
 	public static void findStudent(Connection conn) throws SQLException{
 		Scanner input = new Scanner(System.in);
-		PreparedStatement prestmt = null;
-		prestmt = conn.prepareStatement(ALL_ST_QUERY);
-				
-		ResultSet rs = prestmt.executeQuery(ALL_ST_QUERY);
-					
+		
 		try {
+			PreparedStatement prestmt = null;
+			prestmt = conn.prepareStatement(ALL_ST_QUERY);				
+			
+			ResultSet rs = prestmt.executeQuery(ALL_ST_QUERY);
 			System.out.println("Enter the Student ID: ");
 			int sID = input.nextInt();
+			Boolean nothing = false;
 			while(rs.next()) {
 				if(sID == rs.getInt("student_id")) {
-					System.out.println("ʕ•ᴥ•ʔ нёllo, " + rs.getString("student_fname") + " " + rs.getString("student_lname") + ".");			
+					System.out.println("ʕ•ᴥ•ʔ нёllo, " + rs.getString("student_fname") + " " + rs.getString("student_lname") + ".");
+					nothing = true;
 				} 
 			} 
+			if(nothing == false) {
+				System.out.println("Wrong Information. Please try again.");
+				findStudent(conn);
+			}
 			
 		} catch (Exception e) {
 			System.out.println(e);
@@ -307,23 +348,27 @@ public class Driver {
 		Scanner input = new Scanner(System.in);
 		
 		System.out.println("================= MENU ==================");
-		System.out.println("1. Make a Reservation\n2. Check the reservation\n3. Quit");
+		System.out.println("1. Make a Reservation\n2. Check the reservation\n3. Cancel the reservation\n4. Quit");
 		System.out.println("=========================================");
 		System.out.println("Choose your option in the menu:");
-		int numB = input.nextInt();
+		String numB = input.nextLine();
 		switch (numB) {
-		case 1:
+		case "1":
 			makeReservation(conn);
 			studentMenu(conn);
 			break;
-		case 2:	
+		case "2":	
 			printStudentReservation(conn);
 			studentMenu(conn);
 			break;
-		case 3:
+		case "3":
+			cancelReservation(conn);
+			studentMenu(conn);
+			break;
+		case "4":
 			System.out.println("Good bye!!! Have a nice day!!");
 			System.out.println("    (っ’-‘)╮ =͟͟͞͞♡ =͟͟͞͞♡ =͟͟͞͞♡ ");
-			break;
+			break;			
 		default:
 			studentMenu(conn);
 			break;
@@ -333,7 +378,6 @@ public class Driver {
 
 		
 	}
-	
 
 	public static void main(String[] args) throws SQLException {
 		
@@ -343,7 +387,7 @@ public class Driver {
 		Statement stmt = null;
 				
 		try {
-			conn = getConnection();			
+			conn = getConnection();	
 				String answer = answer();
 				if(answer.equalsIgnoreCase("t")) {
 					findTeacher(conn);
