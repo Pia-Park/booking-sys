@@ -166,10 +166,10 @@ public class Driver {
 				
 		while(rs.next()) {
 			if(cID == rs.getInt("course_id")) {
-				System.out.println("Reservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
-						"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname") + "\n");
+				System.out.println("=========================================\nReservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
+						"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname") + "\n=========================================");
 			}
-		}
+		} System.out.println("**** This course doesn't have any reservation. *****");
 						
 	}
 	
@@ -186,10 +186,10 @@ public class Driver {
 				
 		while(rs.next()) {
 			if(sID == rs.getInt("student_id")) {
-				System.out.println("Reservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
-						"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname"));
+				System.out.println("=========================================\nReservation Course: " + rs.getString("course_name") + "\nReservation date: " + rs.getString("r_date") + 
+						"\nReservation Student name: " + rs.getString("student_fname") + " " + rs.getString("student_lname")+"\n=========================================");
 			}
-		}
+		} System.out.println("*** You don't have any reservation. ***");
 		
 	}
 	
@@ -218,9 +218,9 @@ public class Driver {
 			int tID = input.nextInt();
 			while(rs.next()) {
 				if(tID == rs.getInt("teacher_id")) {
-					System.out.println("Hello, " + rs.getString("teacher_fname") + " " + rs.getString("teacher_lname") + ".");			
+					System.out.println("ʕ•ᴥ•ʔ нёllo, " + rs.getString("teacher_fname") + " " + rs.getString("teacher_lname") + " teacher ♡");			
 				} 
-			} 
+			}  
 			
 		} catch (Exception e) {
 			System.out.println(e);
@@ -241,7 +241,7 @@ public class Driver {
 			int sID = input.nextInt();
 			while(rs.next()) {
 				if(sID == rs.getInt("student_id")) {
-					System.out.println("Hello, " + rs.getString("student_fname") + " " + rs.getString("student_lname") + ".");			
+					System.out.println("ʕ•ᴥ•ʔ нёllo, " + rs.getString("student_fname") + " " + rs.getString("student_lname") + ".");			
 				} 
 			} 
 			
@@ -253,7 +253,7 @@ public class Driver {
 	public static String answer() {
 		Scanner input = new Scanner(System.in);
 		System.out.println("=========================================");
-		System.out.println("        Welcome to Cornerstone!");
+		System.out.println("\n        Welcome to Cornerstone!\n");
 		System.out.println("=========================================");
 
 		System.out.println("If you are a teacher press 't', \nif you are a student press 's': ");
@@ -295,11 +295,11 @@ public class Driver {
 				break;
 			case 5:
 				System.out.println("Good bye! Have a nice day!");
+				System.out.println("    (っ’-‘)╮ =͟͟͞͞♡ =͟͟͞͞♡ =͟͟͞͞♡ ");
 				break;
 			default:
 				teacherMenu(conn);
-				break;
-			
+				break;			
 			} 		
 	}
 	
@@ -322,6 +322,7 @@ public class Driver {
 			break;
 		case 3:
 			System.out.println("Good bye!!! Have a nice day!!");
+			System.out.println("    (っ’-‘)╮ =͟͟͞͞♡ =͟͟͞͞♡ =͟͟͞͞♡ ");
 			break;
 		default:
 			studentMenu(conn);
@@ -345,12 +346,12 @@ public class Driver {
 			conn = getConnection();			
 				String answer = answer();
 				if(answer.equalsIgnoreCase("t")) {
-					System.out.println("Hello!! How can I help you today?");
 					findTeacher(conn);
+					System.out.println("How can I help you today?");
 					teacherMenu(conn);					
 				} else if(answer.equalsIgnoreCase("s")){
-					System.out.println("Hello!! How can I help you today?");
 					findStudent(conn);
+					System.out.println("How can I help you today?");
 					studentMenu(conn);					
 				} else {
 					System.err.println("Wrong Information!");
