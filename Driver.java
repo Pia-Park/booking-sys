@@ -18,7 +18,7 @@ public class Driver {
 	private static final String ALL_T_QUERY = "SELECT * FROM TEACHER";
 	private static final String ALL_C_QUERY = "SELECT * FROM COURSE";
 	private static final String ALL_R_QUERY = "SELECT * FROM RESERVATION";
-	private static final String ADD_R_QUERY = "INSERT INTO RESERVATION(r_date, course_id, student_id) VALUES (?,?,?)";
+	private static final String ADD_R_QUERY = "INSERT INTO RESERVATION(course_id, r_date, student_id) VALUES (?,?,?)";
 	private static final String ADD_S_QUERY = "INSERT INTO STUDENT(student_fname, student_lname, student_pnum, student_email) VALUES (?,?,?,?)";
 	private static final String ADD_T_QUERY = "INSERT INTO TEACHER(teacher_fname, teacher_lname, teacher_pnum, teacher_email) VALUES (?,?,?,?)";
 	private static final String ADD_C_QUERY = "INSERT INTO COURSE(course_name, teacher_id) VALUES (?,?)";
@@ -167,19 +167,33 @@ public class Driver {
 	
 	}
 	
+	public static void printCourse(Connection conn) throws SQLException{
+		PreparedStatement prestmt = null;
+		prestmt = conn.prepareStatement(ALL_C_QUERY);
+		ResultSet rs1 = prestmt.executeQuery();
+		System.out.println("------------** Course List **------------");
+		while(rs1.next()) {
+			System.out.println("=========================================");
+			System.out.println("Corse ID: " + rs1.getInt("course_id") + "\nCouse Name: " + rs1.getString("course_name"));
+			System.out.println("=========================================");
+		}
+	}
+	
 	public static void makeReservation(Connection conn) throws SQLException {
 		Scanner input = new Scanner(System.in);
 		try {
+			printCourse(conn);
 			PreparedStatement prestmt = null;
 			prestmt = conn.prepareStatement(ADD_R_QUERY);
 			
-			System.out.println("Enter the date you want to reservation: ");
-			String date = input.nextLine();
-			prestmt.setDate(1, Date.valueOf(date));
-			
-			System.out.println("Enter the ID of course: ");
+			System.out.println("Enter the ID of course \nthat you want to reservation: ");
 			int cID = input.nextInt();
-			prestmt.setInt(2, cID);
+			prestmt.setInt(1, cID);
+			
+			System.out.println("Enter the date you want to reservation: ");
+			String date = input.next();
+			prestmt.setDate(2, Date.valueOf(date));
+			
 			
 			System.out.println("Enter the ID of student: ");
 			int sID = input.nextInt();
@@ -187,7 +201,7 @@ public class Driver {
 			
 			if(howMany(conn, date, cID) == 6) {
 				System.out.println("(｡•́ - •̀｡)  (｡•́ - •̀｡)  (｡•́ - •̀｡)  (｡•́ - •̀｡) ");
-				System.out.println("    This course is already full. \n    You can not make a reservation.");
+				System.out.println("    This course is already full. \n    You can not make a reservation.\n    Choose an another day!");
 				System.out.println("(｡•́ - •̀｡)  (｡•́ - •̀｡)  (｡•́ - •̀｡)  (｡•́ - •̀｡) ");
 
 			} else {
@@ -215,6 +229,8 @@ public class Driver {
 		
 		Scanner input = new Scanner(System.in);
 		try {
+			
+			printCourse(conn);
 			PreparedStatement prestmt = null;
 			prestmt = conn.prepareStatement(ALL_R_QUERY);
 			
@@ -247,7 +263,7 @@ public class Driver {
 			prestmt = conn.prepareStatement(ALL_R_QUERY);
 			System.out.println("Enter the your Student ID: ");
 			int sID = input.nextInt();
-			System.out.println("----------** Resevation List**-----------");
+			System.out.println("----------** Reservation List**----------");
 			ResultSet rs = prestmt.executeQuery(JOIN_R_QUERY);
 			Boolean nothing = false;
 			while(rs.next()) {
@@ -289,8 +305,7 @@ public class Driver {
 			System.out.println(e);
 		}		
 	}
-		
-	
+			
 	public static void cancelReservation(Connection conn) throws SQLException {
 		Scanner input = new Scanner(System.in);
 		try {
