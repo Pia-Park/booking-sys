@@ -25,7 +25,16 @@ public class Driver {
 	private static final String DELETE_R_QUERY = "DELETE FROM RESERVATION WHERE student_id = ? AND r_id = ?";
 	private static final String UPDATE_R_QUERY = 
 			"UPDATE RESERVATION SET r_date = ? WHERE course_id = ?";
-	private static final String JOIN_R_QUERY = "SELECT s.student_fname, s.student_lname, c.course_name, s.student_id, r.course_id, r.r_date, r.r_id\n"
+	private static final String UPDATE_SF_QUERY =
+			"UPDATE STUDENT SET student_fname = ? WHERE student_id = ?";
+	private static final String UPDATE_SL_QUERY =
+			"UPDATE STUDENT SET student_lname = ? WHERE student_id = ?";
+	private static final String UPDATE_SP_QUERY =
+			"UPDATE STUDENT SET student_pnum = ? WHERE student_id = ?";
+	private static final String UPDATE_SE_QUERY =
+			"UPDATE STUDENT SET student_email = ? WHERE student_id = ?";
+	private static final String JOIN_R_QUERY = 
+			"SELECT s.student_fname, s.student_lname, c.course_name, s.student_id, r.course_id, r.r_date, r.r_id\n"
 			+ "FROM STUDENT s \n"
 			+ "INNER JOIN RESERVATION r\n"
 			+ "ON r.student_id = s.student_id\n"
@@ -77,10 +86,7 @@ public class Driver {
 			System.out.println("Student ID: " + rs.getInt("student_id") + "\nStudent Name: " + rs.getString("student_fname") + " " + rs.getString("student_lname"));
 			System.out.println("=========================================");
 		}
-		
-
-	}
-	
+	}	
 	
 	public static void addTeacher(Connection conn) throws SQLException {
 		Scanner input = new Scanner(System.in);
@@ -380,10 +386,11 @@ public class Driver {
 		Scanner input = new Scanner(System.in);
 		System.out.println("☆..:*・☆.。.:*・°☆.。.:*・°☆.。.:*・°☆..: *");
 		System.out.println("=========================================");
-		System.out.println("\n ⎝⎛♥‿♥⎞⎠ Welcome to Cornerstone!⎝⎛♥‿♥⎞⎠\n");
+		System.out.println("\n ⎝⎛♥‿♥⎞⎠ Welcome to Cornerstone ⎝⎛♥‿♥⎞⎠\n");
 		System.out.println("=========================================");
 		System.out.println("☆..:*・☆.。.:*・°☆.。.:*・°☆.。.:*・°☆..: *");
 		System.out.println("    If you are a teacher press 't', \n    if you are a student press 's': ");
+		System.out.println("☆..:*・☆.。.:*・°☆.。.:*・°☆.。.:*・°☆..: *");
 		String answer = input.nextLine();
 		
 		while(!answer.equalsIgnoreCase("t") && !answer.equalsIgnoreCase("s")) {
@@ -393,34 +400,134 @@ public class Driver {
 		} return answer;
 	}
 	
+	public static void studentInformation(Connection conn, int studentId) throws SQLException{
+		PreparedStatement prestmt = conn.prepareStatement(ALL_ST_QUERY);
+
+		ResultSet rs = prestmt.executeQuery(ALL_ST_QUERY);
+		while(rs.next()) {
+			if(studentId == rs.getInt("student_id")) {
+				System.out.println("*｡ ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ ˖° ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ *｡");
+				System.out.println( rs.getString("student_fname") + " " + rs.getString("student_lname") + "'s Information has been Updated.");
+				System.out.println("*｡ ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ ˖° ☾ ⋆⁺₊⋆ ♡̷̷̷ ‧₊˚ ♡ *｡");	
+				System.out.println("--------** Student Information **--------");
+				System.out.println("=========================================");
+				System.out.println("Student ID: " + rs.getInt("student_id") + "\nStudent Name: " + rs.getString("student_fname") + " " + rs.getString("student_lname") 
+				+ "\nStudent phone number: " + rs.getString("student_pnum") + "\nStudent email: " + rs.getString("student_email"));
+				System.out.println("=========================================");
+			} 
+		} 			
+		
+
+	}
+	
+	public static void updateStudentInformation(Connection conn) throws SQLException {
+		Scanner input = new Scanner(System.in);
+		System.out.println("================= MENU ==================");
+		System.out.println("    1. Update the Student first name\n    2. Update the Student last name\n    3. Update Student phone number\n    4. Update student email\n    5. Quit");
+		System.out.println("=========================================");
+		System.out.println("Choose your option in the menu: ");
+		
+		String option = input.nextLine();
+		switch (option) {
+		case "1":
+			System.out.println("Enter the Student ID that you want to update: ");
+			int sID = input.nextInt();
+			System.out.println("Enter the new first name to update: ");
+			String sName = input.next();
+			
+			PreparedStatement prestmt = null;
+			prestmt = conn.prepareStatement(UPDATE_SF_QUERY);
+			prestmt.setString(1, sName);
+			prestmt.setInt(2, sID);
+			prestmt.executeUpdate();
+			studentInformation(conn, sID);
+			updateStudentInformation(conn);
+			break;
+		case "2":
+			System.out.println("Enter the Student ID that you want to update: ");
+			int sID2 = input.nextInt();
+			System.out.println("Enter the new last name to update: ");
+			String lName = input.next();
+			
+			PreparedStatement prestmt2 = null;
+			prestmt = conn.prepareStatement(UPDATE_SL_QUERY);
+			prestmt.setString(1, lName);
+			prestmt.setInt(2, sID2);
+			prestmt.executeUpdate();
+			studentInformation(conn, sID2);	
+			updateStudentInformation(conn);
+			break;
+			
+		case "3":
+			System.out.println("Enter the Student ID that you want to update: ");
+			int sID3 = input.nextInt();
+			System.out.println("Enter the new phone number to update: ");
+			String pNum = input.next();
+			
+			PreparedStatement prestmt3 = null;
+			prestmt = conn.prepareStatement(UPDATE_SP_QUERY);
+			prestmt.setString(1, pNum);
+			prestmt.setInt(2, sID3);
+			prestmt.executeUpdate();
+			studentInformation(conn, sID3);	
+			updateStudentInformation(conn);
+			break;
+		case "4":
+			System.out.println("Enter the Student ID that you want to update: ");
+			int sID4 = input.nextInt();
+			System.out.println("Enter the new email to update: ");
+			String email = input.next();
+			
+			PreparedStatement prestmt4 = null;
+			prestmt = conn.prepareStatement(UPDATE_SE_QUERY);
+			prestmt.setString(1, email);
+			prestmt.setInt(2, sID4);
+			prestmt.executeUpdate();
+			studentInformation(conn, sID4);	
+			updateStudentInformation(conn);
+			break;
+		case "5":
+			teacherMenu(conn);
+			break;
+		default:
+			updateStudentInformation(conn);
+			break;
+		}
+		
+	}
+	
 	public static void teacherMenu(Connection conn) throws SQLException {
 		Scanner input = new Scanner(System.in);
 		
 		System.out.println("================= MENU ==================");
-		System.out.println("      1. Check the Reservation\n      2. Add a Student\n      3. Add a Teacher\n      4. Add a Course\n      5. Quit");
+		System.out.println("      1. Check the Reservation\n      2. Add a Student\n      3. Update the Student information\n      4. Add a Teacher\n      5. Add a Course\n      6. Quit");
 		System.out.println("=========================================");
 		System.out.println("Choose your option in the menu: ");
 
-		int option = input.nextInt();
+		String option = input.nextLine();
 								
 			switch (option) {
-			case 1:
+			case "1":
 				printCourseReservation(conn);
 				teacherMenu(conn);
 				break;
-			case 2:
+			case "2":
 				addStudent(conn);
 				teacherMenu(conn);
 				break;
-			case 3:
+			case "3":
+				updateStudentInformation(conn);
+				teacherMenu(conn);
+				break;
+			case "4":
 				addTeacher(conn);
 				teacherMenu(conn);
 				break;
-			case 4:
+			case "5":
 				addCourse(conn);
 				teacherMenu(conn);
 				break;
-			case 5:
+			case "6":
 				System.out.println("☆..:*・☆.。.:*・°☆.。.:*・°☆.。.:*・°☆..: *");
 				System.out.println("　   ∧＿∧ \n"
 						+ "   (｡•ㅅ•｡)    Good bye!\n"
@@ -494,7 +601,6 @@ public class Driver {
 				} else {
 					System.err.println("Wrong Information!");
 				}							
-
 		} catch (Exception e) {
 			System.out.println(e);
 		} finally {	
